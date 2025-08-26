@@ -1,0 +1,27 @@
+[project]
+name = "aw_puller_tester"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Александр Кварацхелия", email = "akvarats@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "botocore<1.36",
+    "flask~=3.1",
+    "flask-cors~=6.0",
+    "httpx~=0.28",
+    "moto~=5.1",
+    "pyarrow~=21.0.0",
+    "pydantic~=2.11",
+    "pytest~=8.1",
+    "pyyaml~=6.0",
+]
+
+[project.scripts]
+aw-puller-tester = "aw_puller_tester:main"
+
+[build-system]
+requires = ["uv_build>=0.8.3,<0.9.0"]
+build-backend = "uv_build"

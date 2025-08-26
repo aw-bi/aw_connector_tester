@@ -1,0 +1,42 @@
+connector:
+  url: http://192.168.1.136:9911
+  timeout: 10
+
+s3:
+  mock: false
+  endpoint_url: http://192.168.1.136:8181
+  username: minio_user
+  password: minio_access_pass
+  bucket: aw-etl
+
+data_sources:
+  available:
+    - id: 1
+      type: my-platform
+      params:
+        db: db1
+      objects:
+        # Доступные в источнике объекты в формате schema_name.object_name
+        - public.table1
+        - work.table4
+      sql: 
+        - select id from table2
+      filters:
+        - object_name: public.table1
+          field_name: id
+          operator: ">"
+          value: 1
+
+        - object_name: public.table1
+          field_name: name
+          operator: IN
+          value: "('name 1', 'name 2')"
+
+        - object_name: public.table1
+          value: 'id < 3'
+
+  unavailable:
+    id: 2
+    type: my-platform
+    params:
+      db: db2
