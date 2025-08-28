@@ -1,4 +1,5 @@
 from typing import Generator
+import uuid
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -10,6 +11,7 @@ from moto.server import ThreadedMotoServer
 import boto3
 
 from aw_puller_tester.dto import TestConfig
+from aw_puller_tester.tools import delete_s3_folder
 
 
 @pytest.fixture(scope='session')
@@ -58,7 +60,7 @@ def connector_client(
         yield client
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope='session')
 def etl_s3_client(test_config):
     """ 
     Возвращает клиент к S3 серверу для ETL процессов
@@ -90,6 +92,23 @@ def etl_s3_client(test_config):
             moto_server.stop()
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope='session')
 def etl_s3_bucket(test_config):
     return test_config.s3.bucket
+
+
+@pytest.fixture(scope='function')
+def etl_temp_run_folder(etl_s3_client, etl_s3_bucket):
+    """ 
+    Возвращает временную etl папку в runs/. После выполнения теста содержимое папки очищается 
+    """
+    folder_key = f'runs/{uuid.uuid4().hex}'
+
+    try:
+        yield folder_key
+    finally:
+        delete_s3_folder(
+            s3_client=etl_s3_client,
+            bucket=etl_s3_bucket,
+            folder_key=folder_key
+        )
